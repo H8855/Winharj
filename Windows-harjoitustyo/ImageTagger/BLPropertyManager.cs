@@ -47,7 +47,7 @@ namespace ImageTagger
                 ShellFile file = ShellFile.FromFilePath(filePath);
                 ShellPropertyWriter writer = file.Properties.GetPropertyWriter();
                 writer.WriteProperty(SystemProperties.System.Keywords, tags);
-                writer.Close();         
+                writer.Close();     
              }
             catch (Exception ex)
             {

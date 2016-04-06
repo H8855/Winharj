@@ -27,20 +27,26 @@ namespace ImageTagger
             set { filePath = value; }
         }
 
-        private string tags;
+        private List<string> tagsList;
 
-        public string Tags
+        public List<string> TagsList
         {
-            get { return tags; }
-            set { tags = value; }
+            get { return tagsList; }
+            set { tagsList = value; }
         }
+
 
         #endregion
         #region CONSTRUCTORS
+        public Picture(string filePath, List<string> tagsList)
+        {
+            this.filePath = filePath;
+            this.tagsList = tagsList;
+        }
 
         #endregion
         #region METHODS
-        
+
         #endregion
     }
 }

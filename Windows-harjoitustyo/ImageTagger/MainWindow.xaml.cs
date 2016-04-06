@@ -30,8 +30,8 @@ namespace ImageTagger
         {
             try
             {
-                List<string> TagsList = PropertyManager.GetTags("F:\\nwmain.jpg");
-                TagsList.Remove("Kissa");
+                List<string> TagsList = PropertyManager.GetTags("D:\\H8855\\testikuva.jpg");
+                //TagsList.Remove("Kissa");
                 foreach (var tag in TagsList)
                 {
                     lbTags.Items.Add(tag);
@@ -51,7 +51,7 @@ namespace ImageTagger
 
             try
             {
-                PropertyManager.SaveTags(TestTagsList, "F:\\testi\\testaus.jpg");
+                PropertyManager.SaveTags(TestTagsList, "D:\\H8855\\testikuva.jpg");
             }
             catch (Exception ex)
             {
