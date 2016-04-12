@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System.IO;
 
 namespace ImageTagger
 {
-    public class Picture
+    public class Picture : INotifyPropertyChanged
     {
         #region PROPERTIES
-        private string name;
-
         public string Name
         {
-            get { return name; }
-            set { name = value; }
+            get { return Path.GetFileName(filePath); }
         }
 
         private string filePath;
@@ -27,18 +26,18 @@ namespace ImageTagger
             set { filePath = value; }
         }
 
-        private List<string> tagsList;
+        private BindingList<string> tagsList;
 
-        public List<string> TagsList
+        public BindingList<string> TagsList
         {
             get { return tagsList; }
-            set { tagsList = value; }
+            set { tagsList = value; Notify("TagsList"); }
         }
 
 
         #endregion
         #region CONSTRUCTORS
-        public Picture(string filePath, List<string> tagsList)
+        public Picture(string filePath, BindingList<string> tagsList)
         {
             this.filePath = filePath;
             this.tagsList = tagsList;
@@ -46,7 +45,19 @@ namespace ImageTagger
 
         #endregion
         #region METHODS
+        public override string ToString()
+        {
+            return Name;
+        }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        void Notify(string propName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propName));
+            }
+        }
         #endregion
     }
 }

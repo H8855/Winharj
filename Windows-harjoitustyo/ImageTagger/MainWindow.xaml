@@ -5,10 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageTagger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="800">
     <Grid>
-        <Button x:Name="btnShowTags" Content="Load" HorizontalAlignment="Left" Margin="302,81,0,0" VerticalAlignment="Top" Width="75" Click="btnShowTags_Click"/>
-        <ListBox x:Name="lbTags" HorizontalAlignment="Left" Height="100" Margin="101,81,0,0" VerticalAlignment="Top" Width="100"/>
-        <Button x:Name="btnSaveTags" Content="Save" HorizontalAlignment="Left" Margin="349,161,0,0" VerticalAlignment="Top" Width="75" Click="lbSaveTags_Click"/>
+        <DockPanel x:Name="dpPicture">
+            <StackPanel DockPanel.Dock="Left"  Width="200">
+                <Button x:Name="btnSelectFolder" Content="Select folder" Click="btnSelectFolder_Click"/>
+                <ListBox x:Name="lbFiles" ItemsSource="{Binding}" Width="200" Height="200" SelectionChanged="lbFiles_SelectionChanged"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Left" Width="200">
+                <Button x:Name="btnShowTags" Content="Load" Click="btnShowTags_Click"/>
+                <ListBox x:Name="lbTags" Width="200" Height="200" ItemsSource="{Binding Path=TagsList, Mode=TwoWay}"/>
+                <Button x:Name="btnSaveTags" Content="Save" Click="lbSaveTags_Click"/>
+                <Button x:Name="btnTestModifyingTags" Content="TestModTag" Click="btnTestModifyingTags_Click"/>
+                <TextBox x:Name="txtTag"/>
+                <Button x:Name="btnAddTag" Content="Add a new tag" Click="btnAddTag_Click"/>
+                <Button x:Name="btnRemoveTag" Content="Remove the selected tag"/>
+            </StackPanel>
+            <ScrollViewer DockPanel.Dock="Right" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+                <Image x:Name="imgMain" Source="{Binding Path=FilePath}"/>
+            </ScrollViewer>
+        </DockPanel>
     </Grid>
 </Window>

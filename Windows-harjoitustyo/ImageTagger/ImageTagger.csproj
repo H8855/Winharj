@@ -75,6 +75,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BLFileManager.cs" />
     <Compile Include="BLPicture.cs" />
     <Compile Include="BLPropertyManager.cs" />
     <Compile Include="MainWindow.xaml.cs">

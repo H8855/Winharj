@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System.ComponentModel;
 
 namespace ImageTagger
 {
@@ -17,14 +18,20 @@ namespace ImageTagger
             return value.ValueAsObject.ToString();
         } 
 
-        public static List<string> GetTags(string filePath)
+        public static BindingList<string> GetTags(string filePath)
         {
             try
             {
                 ShellFile file = ShellFile.FromFilePath(filePath);
                 var tagsArray = file.Properties.GetProperty(SystemProperties.System.Keywords).ValueAsObject;
-                List<string> tagsList = new List<string>();
-                tagsList.AddRange((string[])tagsArray);
+                BindingList<string> tagsList = new BindingList<string>();
+                if (tagsArray != null)
+                {
+                    foreach (string item in (string[])tagsArray)
+                    {
+                        tagsList.Add(item);
+                    }
+                }          
                 return tagsList;
             }
             catch (Exception ex)
@@ -34,7 +41,7 @@ namespace ImageTagger
             }
         }
 
-        public static void SaveTags(List<String> tagsList, string filePath)
+        public static void SaveTags(BindingList<String> tagsList, string filePath)
         {
             string tags = "";
             foreach (string tag in tagsList)
@@ -44,8 +51,8 @@ namespace ImageTagger
             tags = tags.Remove(tags.Length - 2);
             try
             {
-                ShellFile file = ShellFile.FromFilePath(filePath);
-                ShellPropertyWriter writer = file.Properties.GetPropertyWriter();
+                ShellObject file = ShellFile.FromFilePath(filePath);
+                var writer = file.Properties.GetPropertyWriter();
                 writer.WriteProperty(SystemProperties.System.Keywords, tags);
                 writer.Close();     
              }
