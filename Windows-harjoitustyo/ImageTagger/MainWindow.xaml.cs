@@ -26,7 +26,7 @@ namespace ImageTagger
     public partial class MainWindow : Window
     {
         ObservableCollection<Picture> pictures = new ObservableCollection<Picture>();
-        string testFile = "F:\\testi\\nwmain.jpg";
+        string testFile = "D:\\H8855\\Testikuvat\\testikuva.jpg";
         string folder = "F:\\testi";   
 
         public MainWindow()
