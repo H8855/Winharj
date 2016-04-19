@@ -5,21 +5,66 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageTagger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="800">
+        Title="MainWindow" Height="800" Width="1200">
+    <Window.Resources>
+        <Style x:Key="textBoxAddTagHint" TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+            <Style.Resources>
+                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                    <VisualBrush.Visual>
+                        <Label Content="Write tag to be added" Foreground="LightGray" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Style.Resources>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="Text" Value="{x:Null}">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Background" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="textBoxTagSearchHint" TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+            <Style.Resources>
+                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                    <VisualBrush.Visual>
+                        <Label Content="Write text to be searched" Foreground="LightGray" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Style.Resources>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="Text" Value="{x:Null}">
+                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Background" Value="White" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <DockPanel x:Name="dpPicture">
             <StackPanel DockPanel.Dock="Left"  Width="200">
                 <Button x:Name="btnSelectFolder" Content="Select folder" Click="btnSelectFolder_Click"/>
+                <ComboBox x:Name="cbiShow" SelectionChanged="cbiShow_SelectionChanged">
+                    <ComboBoxItem x:Name="cbiShowAll">Show all files</ComboBoxItem>
+                    <ComboBoxItem x:Name="cbiShowTagless">Show tagless files</ComboBoxItem>
+                    <ComboBoxItem x:Name="cbiShowWithTag">Show files with tags containing:</ComboBoxItem>
+                </ComboBox>
+                <TextBox x:Name="txtFilter" Style="{StaticResource textBoxTagSearchHint}" TextChanged="txtFilter_TextChanged"/>
                 <ListBox x:Name="lbFiles" ItemsSource="{Binding}" Width="200" Height="200" SelectionChanged="lbFiles_SelectionChanged"/>
-            </StackPanel>
-            <StackPanel DockPanel.Dock="Left" Width="200">
-                <Button x:Name="btnShowTags" Content="Load" Click="btnShowTags_Click"/>
+                <TextBlock Margin="0,10,0,0">List of the selected file's tags:</TextBlock>
                 <ListBox x:Name="lbTags" Width="200" Height="200" ItemsSource="{Binding Path=TagsList, Mode=TwoWay}"/>
-                <Button x:Name="btnSaveTags" Content="Save" Click="lbSaveTags_Click"/>
-                <Button x:Name="btnTestModifyingTags" Content="TestModTag" Click="btnTestModifyingTags_Click"/>
-                <TextBox x:Name="txtTag"/>
+                <TextBox x:Name="txtTag" Style="{StaticResource textBoxAddTagHint}"/>
                 <Button x:Name="btnAddTag" Content="Add a new tag" Click="btnAddTag_Click"/>
-                <Button x:Name="btnRemoveTag" Content="Remove the selected tag"/>
+                <Button x:Name="btnRemoveTag" Content="Remove the selected tag" Click="btnRemoveTag_Click"/>
+                <Button x:Name="btnSaveTags" Content="Save" Click="lbSaveTags_Click"/>
             </StackPanel>
             <ScrollViewer DockPanel.Dock="Right" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
                 <Image x:Name="imgMain" Source="{Binding Path=FilePath}"/>

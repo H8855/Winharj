@@ -48,6 +48,7 @@ namespace ImageTagger
             {
                 tags = tags + tag + "; ";
             }
+            if(tags.Any())
             tags = tags.Remove(tags.Length - 2);
             try
             {

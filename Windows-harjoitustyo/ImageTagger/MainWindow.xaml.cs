@@ -26,77 +26,27 @@ namespace ImageTagger
     public partial class MainWindow : Window
     {
         ObservableCollection<Picture> pictures = new ObservableCollection<Picture>();
-        string testFile = "D:\\H8855\\Testikuvat\\testikuva.jpg";
-        string folder = "F:\\testi";   
+        string folder;
+        Picture currentPicture;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void btnShowTags_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                BindingList<string> TagsList = PropertyManager.GetTags(testFile);
-                foreach (var tag in TagsList)
-                {
-                    lbTags.Items.Add(tag);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
+        
         private void lbSaveTags_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                PropertyManager.SaveTags(pictures.ElementAt(lbFiles.SelectedIndex).TagsList, pictures.ElementAt(lbFiles.SelectedIndex).FilePath);
+                PropertyManager.SaveTags(currentPicture.TagsList, currentPicture.FilePath);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }            
         }
-
-        private void LoadImage(string filePath)
-        {
-            BitmapImage b = new BitmapImage();
-            b.BeginInit();
-            b.UriSource = new Uri(filePath);
-            b.EndInit();
-            imgMain.Source = b;
-            //return b;
-        }
-
-        private void ModifyTestData()
-        {
-            pictures.First().TagsList.Add("Uusitagi");
-        }
-
-        private void SetTestData(string filePath)
-        {
-            BindingList<string> TestTagsList = new BindingList<string>();
-            TestTagsList.Add("Koira");
-            TestTagsList.Add("Hevonen");
-
-            Picture temp = new Picture(filePath, TestTagsList);
-            pictures.Add(temp);
-        }
-
-        private void SetTestData2(string filePath)
-        {
-            pictures.Add(FileManager.LoadFile(testFile));
-        }
-
-        private void btnTestModifyingTags_Click(object sender, RoutedEventArgs e)
-        {
-            ModifyTestData();           
-        }
-
+       
         private void btnSelectFolder_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -116,7 +66,8 @@ namespace ImageTagger
                 {
                     folder = dlg.FileName;
                     pictures = FileManager.LoadFolder(folder);
-                    lbFiles.DataContext = pictures;                   
+                    lbFiles.DataContext = pictures;
+                    ApplyFilter();
                 }
             }
             catch (Exception ex)
@@ -129,12 +80,10 @@ namespace ImageTagger
         {
             if (lbFiles.SelectedIndex >= 0 && lbFiles.SelectedIndex < pictures.Count)
             {
+                    
                 lbTags.DataContext = lbFiles.SelectedItem;
-                //Picture temp = (Picture)lbFiles.SelectedItem;
-                //BitmapImage kuva = LoadImage(testFile);
-                //imgMain.Source = kuva;   
-                //LoadImage(testFile);   
-                imgMain.DataContext = lbFiles.SelectedItem;                                      
+                currentPicture = (Picture)lbFiles.SelectedItem;
+                imgMain.Source = LoadImage(currentPicture.FilePath);                                   
             }
         }
 
@@ -142,14 +91,103 @@ namespace ImageTagger
         {
             try
             {
-                if (!string.IsNullOrEmpty(txtTag.Text)){
-                    pictures.ElementAt(lbFiles.SelectedIndex).TagsList.Add(txtTag.Text);
+                if (currentPicture != null)
+                {
+                    if (!string.IsNullOrEmpty(txtTag.Text))
+                    {
+                        currentPicture.TagsList.Add(txtTag.Text);
+                    }
+                    else
+                        MessageBox.Show("Type the tag first");
                 }
+                else
+                    MessageBox.Show("No picture selected");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void btnRemoveTag_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (lbTags.SelectedIndex >= 0 && lbTags.SelectedIndex < currentPicture.TagsList.Count)
+                    currentPicture.TagsList.RemoveAt(lbTags.SelectedIndex);
+                else
+                    MessageBox.Show("No tag selected");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void cbiShow_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
+
+        #region FILTERS
+        private bool FilterTagless(object item)
+        {
+            Picture picture = (Picture)item;
+            if (picture.TagsList.Count() > 0)
+                return false;
+            else
+                return true;
+        }
+
+        private bool FilterWith(object item)
+        {
+            Picture picture = (Picture)item;
+            if (picture.TagsList.Count() > 0)
+            {
+
+                foreach (string tag in picture.TagsList)
+                {
+                    if (tag.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                        return true;
+                }
+                return false;
+            }
+            else
+                return false;
+        }
+        #endregion
+
+        #region METHODS
+        private void ApplyFilter()
+        {
+            if (cbiShow.SelectedItem == cbiShowAll && folder != null)
+                CollectionViewSource.GetDefaultView(lbFiles.ItemsSource).Filter = null;
+            if (cbiShow.SelectedItem == cbiShowTagless && folder != null)
+                CollectionViewSource.GetDefaultView(lbFiles.ItemsSource).Filter = FilterTagless;
+            if (cbiShow.SelectedItem == cbiShowWithTag && folder != null)
+            {
+                if (txtFilter.Text.Any())
+                    CollectionViewSource.GetDefaultView(lbFiles.ItemsSource).Filter = FilterWith;
+                else
+                    CollectionViewSource.GetDefaultView(lbFiles.ItemsSource).Filter = null;
+            }         
+        }
+
+        private BitmapImage LoadImage(string filePath)
+        {
+            BitmapImage b = new BitmapImage();
+            b.BeginInit();
+            b.StreamSource = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            b.CacheOption = BitmapCacheOption.OnLoad;
+            b.EndInit();
+            b.StreamSource.Dispose();
+            return b;
+        }
+        #endregion
     }
 }
