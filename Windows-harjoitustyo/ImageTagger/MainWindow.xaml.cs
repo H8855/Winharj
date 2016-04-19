@@ -83,7 +83,14 @@ namespace ImageTagger
                     
                 lbTags.DataContext = lbFiles.SelectedItem;
                 currentPicture = (Picture)lbFiles.SelectedItem;
-                imgMain.Source = LoadImage(currentPicture.FilePath);                                   
+                try
+                {
+                    imgMain.Source = LoadImage(currentPicture.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }                                  
             }
         }
 
@@ -179,7 +186,7 @@ namespace ImageTagger
         }
 
         private BitmapImage LoadImage(string filePath)
-        {
+        {            
             BitmapImage b = new BitmapImage();
             b.BeginInit();
             b.StreamSource = new FileStream(filePath, FileMode.Open, FileAccess.Read);
